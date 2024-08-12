@@ -41,7 +41,7 @@ self.generatePac = function(host, port) {
     const gadget = '203.104.209.7';
 
     const ipsExp = ips.join('|');
-    let pac = 'function FindProxyForURL(url, host) {\n'
+    const pac = 'function FindProxyForURL(url, host) {\n'
     + `  if (shExpMatch(url, "http://(${ipsExp})/(kcs|kcs2)/*") || host == "${gadget}")\n`
     + `    return "PROXY ${host}:${port}";\n`
     + '  return "DIRECT";\n'
@@ -51,6 +51,7 @@ self.generatePac = function(host, port) {
 };
 
 self.applyProxy = function (host, port, enable) {
+    // todo: look into relinquishing our proxy control completely if disabled
     const config = {mode: enable ? 'pac_script' : 'direct'};
     if (enable)
         config.pacScript = { data: self.generatePac(host, port), mandatory: true };
