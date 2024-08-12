@@ -51,16 +51,20 @@ self.generatePac = function(host, port) {
 };
 
 self.applyProxy = function (host, port, enable) {
-    // todo: look into relinquishing our proxy control completely if disabled
-    const config = {mode: enable ? 'pac_script' : 'direct'};
     if (enable) {
         const data = self.generatePac(host, port);
-        config.pacScript = { data, mandatory: true };
+        const config = { mode: 'pac_script', pacScript: { data, mandatory: true } };
+        chrome.proxy.settings.set(
+            { value: config, scope: 'regular' },
+            () => console.log(`proxy configured with data: ${JSON.stringify(config)}`)
+        );
     }
-    chrome.proxy.settings.set(
-        { value: config, scope: 'regular' },
-        () => console.log(`proxy configured with data: ${JSON.stringify(config)}`)
-    );
+    else {
+        chrome.proxy.settings.clear(
+            { scope: 'regular' },
+            () => console.log(`proxy configuration cleared`)
+        );
+    }
     
     const iconPath = '/assets/icons/KCProxifier_' + (enable ? 'green' : 'blue') + '_32.png';
     chrome.browserAction.setIcon({ path: iconPath });
