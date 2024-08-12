@@ -53,13 +53,17 @@ self.generatePac = function(host, port) {
 self.applyProxy = function (host, port, enable) {
     // todo: look into relinquishing our proxy control completely if disabled
     const config = {mode: enable ? 'pac_script' : 'direct'};
-    if (enable)
-        config.pacScript = { data: self.generatePac(host, port), mandatory: true };
-    chrome.browserAction.setIcon({path: '/assets/icons/KCProxifier_' + (enable ? 'green' : 'blue') + '_32.png'});
+    if (enable) {
+        const data = self.generatePac(host, port);
+        config.pacScript = { data, mandatory: true };
+    }
     chrome.proxy.settings.set(
         { value: config, scope: 'regular' },
         () => console.log(`proxy configured with data: ${JSON.stringify(config)}`)
     );
+    
+    const iconPath = '/assets/icons/KCProxifier_' + (enable ? 'green' : 'blue') + '_32.png';
+    chrome.browserAction.setIcon({ path: iconPath });
 };
 
 chrome.runtime.onMessage.addListener(function(msg) {
