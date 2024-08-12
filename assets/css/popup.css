@@ -1,0 +1,9 @@
+body {
+  width: 400px;
+}
+
+textarea.spacious {
+  width: 100%;
+  height: 80px;
+  resize: vertical;
+}
