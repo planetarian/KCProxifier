@@ -88,7 +88,7 @@
     chrome.webRequest.onBeforeSendHeaders.addListener(
         (details) => {
             if (serverHost) {
-                details.requestHeaders.push({ name: 'x-kcp-host', value: serverHost });
+                details.requestHeaders.push({ name: 'x-host', value: serverHost });
                 return { requestHeaders: details.requestHeaders }
             }
         },
