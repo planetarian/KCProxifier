@@ -18,9 +18,8 @@ self.loadSettings = function () {
 
 self.applyProxy = async function () {
     self.settings = self.loadSettings();
-    self.enable = self.settings.proxyEnable === "true";
+    const enable = self.settings.proxyEnable === "true";
     
-
     if (enable && self.settings.proxyMode === 'https-mitm') {
         const pacScript = self.generatePac(self.settings.proxyHost, self.settings.proxyPort);
         await chrome.proxy.settings.set(
