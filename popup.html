@@ -25,14 +25,24 @@
             <input type="checkbox" id="proxyenable"/>
         </p>
         <p>
-            <label>Mode:</label>
-            <input type="radio" id="proxymodepath" name="proxymode" value="path"/>
-            <label for="proxymodepath">URL Path</label>
-            <input type="radio" id="proxymodeheader" name="proxymode" value="header"/>
-            <label for="proxymodeheader">Header</label>
+            <div>
+                <label>Mode:</label>
+            </div>
+            <div>
+                <input type="radio" id="proxymodehttpsmitm" name="proxymode" value="https-mitm"/>
+                <label for="proxymodehttpsmitm">HTTPS MITM (Recommended)</label>
+            </div>
+            <div>
+                <input type="radio" id="proxymodepath" name="proxymode" value="path"/>
+                <label for="proxymodepath">URL Path</label>
+            </div>
+            <div>
+                <input type="radio" id="proxymodeheader" name="proxymode" value="header"/>
+                <label for="proxymodeheader">Header</label>
+            </div>
         </p>
         <p>
-            <button id="save">Save</button>
+            <input type="button" id="save" value="Save"/>
             <span id="success">Saved ✔</span>
         </p>
     </form>

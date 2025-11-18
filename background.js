@@ -16,16 +16,45 @@ self.loadSettings = function () {
     }
 };
 
-self.applyProxy = function () {
+self.applyProxy = async function () {
     self.settings = self.loadSettings();
     self.enable = self.settings.proxyEnable === "true";
+    
+
+    if (enable && self.settings.proxyMode === 'https-mitm') {
+        const pacScript = self.generatePac(self.settings.proxyHost, self.settings.proxyPort);
+        await chrome.proxy.settings.set(
+            { value: { mode: "pac_script", pacScript: { data: pacScript } }, scope: 'regular' },
+            () => console.log("Applied proxy settings with PAC script.", pacScript)
+        );
+    } else {
+        await chrome.proxy.settings.clear(
+            { scope: 'regular' },
+            () => console.log("Cleared proxy settings.")
+        );
+    }
 
     const iconPath = '/assets/icons/KCProxifier_' + (enable ? 'green' : 'blue') + '_32.png';
     chrome.browserAction.setIcon({ path: iconPath });
 };
 
+self.generatePac = function (host, port) {
+    // server letters, will expand to '00g|01y|02k' etc
+    const servers = 'gyksmotlrsbtpbhpskish'
+    const serversExp = [...servers].map((c, i) => String(i).padStart(2, '0') + c).join('|')
+
+    const pac =
+        'function FindProxyForURL(url, host) {\n' +
+        `  if (new RegExp("w(${serversExp})\\.kancolle-server\\.com").test(host))\n` +
+        `    return "PROXY ${host}:${port}";\n` +
+        '  return "DIRECT";\n' +
+        '}\n'
+
+    return pac
+}
+
 chrome.webRequest.onBeforeRequest.addListener((details) => {
-    if (!self.enable || details.method !== 'GET' || details.url.includes('/kcscontents/news'))
+    if (!self.enable || self.settings.proxyMode === 'https-mitm' || details.method !== 'GET' || details.url.includes('/kcscontents/news'))
         return;
 
     const url = new URL(details.url);
@@ -46,7 +75,7 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
 );
 
 chrome.webRequest.onBeforeRequest.addListener((details) => {
-    if (!self.enable) return;
+    if (!self.enable || self.settings.proxyMode === 'https-mitm') return;
     let url = new URL(details.url)
     console.log("HTTP:", url.href);
     if (self.serverHost && url.pathname?.includes('/kcs2/resources/world')) {
@@ -74,11 +103,11 @@ chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
     ['blocking', 'requestHeaders'],
 );
 
-chrome.runtime.onMessage.addListener(function (msg) {
+chrome.runtime.onMessage.addListener(async function (msg) {
     if (!msg)
         console.error("KCProxifier: Received null message.");
     else if (msg.action === 'apply-proxy')
-        self.applyProxy();
+        await self.applyProxy();
     else
         console.error("KCProxifier: Received unknown message", msg);
 });

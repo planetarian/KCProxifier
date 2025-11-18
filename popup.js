@@ -30,9 +30,11 @@ self.saveSettings = async function(host, port, enable, mode) {
         self.applyProxy(host, port, enable, mode);
         byId('success').style.display = 'inline-block';
         setTimeout(() => byId('success').style.display = 'none', 3*1000);
+
+        console.log("Proxy settings saved.");
     }
     catch (error) {
-        console.error(`Error occurred while saving proxy settings.`, error);
+        console.error("Error occurred while saving proxy settings.", error);
     }
 };
 
