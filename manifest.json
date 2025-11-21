@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "KCProxifier",
-    "version": "2.2",
+    "version": "2.3",
     "icons": {
       "16": "/assets/icons/KCProxifier_blue_16.png",
       "32": "/assets/icons/KCProxifier_blue_32.png",

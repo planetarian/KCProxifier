@@ -53,7 +53,8 @@ self.generatePac = function (host, port) {
 }
 
 chrome.webRequest.onBeforeRequest.addListener((details) => {
-    if (!self.enable || self.settings.proxyMode === 'https-mitm' || details.method !== 'GET' || details.url.includes('/kcscontents/news'))
+    if (!self.settings.proxyEnable === "true" || self.settings.proxyMode === "https-mitm"
+        || details.method !== 'GET' || details.url.includes('/kcscontents/news'))
         return;
 
     const url = new URL(details.url);
@@ -74,7 +75,8 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
 );
 
 chrome.webRequest.onBeforeRequest.addListener((details) => {
-    if (!self.enable || self.settings.proxyMode === 'https-mitm') return;
+    if (!self.settings.proxyEnable === "true" || self.settings.proxyMode === "https-mitm")
+        return;
     let url = new URL(details.url)
     console.log("HTTP:", url.href);
     if (self.serverHost && url.pathname?.includes('/kcs2/resources/world')) {
@@ -90,7 +92,8 @@ chrome.webRequest.onBeforeRequest.addListener((details) => {
 );
 
 chrome.webRequest.onBeforeSendHeaders.addListener((details) => {
-    if (!self.enable || !self.settings.proxyMode === 'header') return;
+    if (!self.settings.proxyEnable === "true" || !self.settings.proxyMode === "header")
+        return;
     const url = new URL(details.url)
     if (['/gadget_html5/', '/kcscontents/'].some(x => url.pathname?.includes(x)))
         details.requestHeaders.push({ name: 'x-host', value: 'w00g.kancolle-server.com' });
